@@ -3,3 +3,5 @@ target/*
 *.jar
 *.ipr
 *.iml
+*.iws
+
