@@ -41,6 +41,24 @@ public class Form {
         this(actionURI, null, null);
     }
 
+    public static boolean fieldHasError(Form form, String fieldName) {
+        if (form.formFieldWithErrors != null) {
+            return form.formFieldWithErrors.getErrors().stream().anyMatch(e -> e.getFieldName().equals(fieldName));
+        } else {
+            return false;
+        }
+    }
+
+    public static io.quarkus.qute.RawString fieldValue(Form form, String fieldName) {
+        if (form.fieldMapper != null) {
+            System.out.println("fieldMapper for fieldName " + fieldName);
+            return form.fieldMapper.getValue(fieldName).map(v -> new RawString(v)).orElse(new RawString(""));
+        } else {
+            System.out.println("err form.fieldMapper is null");
+            return new RawString("");
+        }
+    }
+
     public String getActionURI() {
         return actionURI;
     }
@@ -64,7 +82,7 @@ public class Form {
      * #{formErrors.reason ?: ''}
      * </div>
      *
-     * @return
+     * @return a Quarkus RawString
      */
     public io.quarkus.qute.RawString getRenderIfErrors() {
         if (formFieldWithErrors != null && formFieldWithErrors.hasErrors()) {
@@ -83,20 +101,13 @@ public class Form {
         return false;
     }
 
-    public static boolean fieldHasError(Form form, String fieldName) {
-        return form.formFieldWithErrors.getErrors().stream().anyMatch(e -> e.getFieldName().equals(fieldName));
-    }
-
-    public static io.quarkus.qute.RawString fieldValue(Form form, String fieldName) {
-        return form.fieldMapper.getValue(fieldName).map(v -> new RawString(v)).orElse(new RawString(""));
-    }
-
     @Override
     public String toString() {
         return "Form{" +
                 "actionURI='" + actionURI + '\'' +
                 ", formFieldWithErrors=" + formFieldWithErrors +
                 ", fieldMapper=" + fieldMapper +
+                ", fieldMapper.isEmpty=" + fieldMapper.isEmpty() +
                 '}';
     }
 }

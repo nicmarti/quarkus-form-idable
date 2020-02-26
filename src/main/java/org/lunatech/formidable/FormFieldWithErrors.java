@@ -8,32 +8,17 @@ import java.util.stream.Collectors;
 public class FormFieldWithErrors {
     private List<FormError> errors;
 
-    public class FormError {
-        private final String fieldName;
-        private final String errorMsg;
-
-        public FormError(String fieldName, String errorMsg) {
-            this.fieldName = fieldName;
-            this.errorMsg = errorMsg;
-        }
-
-        public String getFieldName() {
-            return fieldName;
-        }
-
-        public String getMessage() {
-            return errorMsg;
-        }
-
-    }
-
-
     public FormFieldWithErrors() {
         this.errors = Collections.unmodifiableList(Collections.emptyList());
     }
 
+
     public FormFieldWithErrors(List<FormError> errors) {
         this.errors = Collections.unmodifiableList(errors);
+    }
+
+    public static FormFieldWithErrors prepareNew() {
+        return new FormFieldWithErrors();
     }
 
     public FormFieldWithErrors nonEmpty(String fieldName, String fieldValue) {
@@ -44,10 +29,6 @@ public class FormFieldWithErrors {
             return this.addNewError(fieldName, fieldName + " cannot be empty");
         }
         return this;
-    }
-
-    public static FormFieldWithErrors prepareNew() {
-        return new FormFieldWithErrors();
     }
 
     public FormFieldWithErrors addNewError(String fieldName, String errorMsg) {
@@ -81,6 +62,25 @@ public class FormFieldWithErrors {
                     '}';
         } else {
             return "FormFieldWithErrors{}";
+        }
+
+    }
+
+    public class FormError {
+        private final String fieldName;
+        private final String errorMsg;
+
+        public FormError(String fieldName, String errorMsg) {
+            this.fieldName = fieldName;
+            this.errorMsg = errorMsg;
+        }
+
+        public String getFieldName() {
+            return fieldName;
+        }
+
+        public String getMessage() {
+            return errorMsg;
         }
 
     }
