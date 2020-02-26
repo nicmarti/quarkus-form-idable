@@ -5,6 +5,8 @@ import io.quarkus.qute.TemplateExtension;
 
 import java.util.stream.Collectors;
 
+import static io.quarkus.qute.TemplateExtension.ANY;
+
 /**
  * This is a simple DTO to store why the form was not validated.
  * We can use this with a 400 Bad Request and re-render the template.
@@ -41,23 +43,6 @@ public class Form {
         this(actionURI, null, null);
     }
 
-    public static boolean fieldHasError(Form form, String fieldName) {
-        if (form.formFieldWithErrors != null) {
-            return form.formFieldWithErrors.getErrors().stream().anyMatch(e -> e.getFieldName().equals(fieldName));
-        } else {
-            return false;
-        }
-    }
-
-    public static io.quarkus.qute.RawString fieldValue(Form form, String fieldName) {
-        if (form.fieldMapper != null) {
-            System.out.println("fieldMapper for fieldName " + fieldName);
-            return form.fieldMapper.getValue(fieldName).map(v -> new RawString(v)).orElse(new RawString(""));
-        } else {
-            System.out.println("err form.fieldMapper is null");
-            return new RawString("");
-        }
-    }
 
     public String getActionURI() {
         return actionURI;
@@ -109,5 +94,27 @@ public class Form {
                 ", fieldMapper=" + fieldMapper +
                 ", fieldMapper.isEmpty=" + fieldMapper.isEmpty() +
                 '}';
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @TemplateExtension(matchName = ANY)
+    public static boolean fieldHasError(Form form, String fieldName) {
+        if (form.formFieldWithErrors != null) {
+            return form.formFieldWithErrors.getErrors().stream().anyMatch(e -> e.getFieldName().equals(fieldName));
+        } else {
+            return false;
+        }
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @TemplateExtension(matchName = ANY)
+    public static io.quarkus.qute.RawString fieldValue(Form form, String fieldName) {
+        if (form.fieldMapper != null) {
+            System.out.println("fieldMapper for fieldName " + fieldName);
+            return form.fieldMapper.getValue(fieldName).map(v -> new RawString(v)).orElse(new RawString(""));
+        } else {
+            System.out.println("err form.fieldMapper is null");
+            return new RawString("");
+        }
     }
 }
