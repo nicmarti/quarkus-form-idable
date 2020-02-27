@@ -71,3 +71,33 @@ Here is the code of the renderInput tag (located under src/main/resources/templa
 {/if}
 ```
 
+# How to implement Form validation and re-render if the Form is not valid ?
+
+The following code in our Controller is supposed to save the TimeEntry bean. 
+Before, it will try to validate the bean.
+
+```java 
+
+    @POST
+    @Path("/new")
+    @Consumes(APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_HTML)
+    public Response save(@org.jboss.resteasy.annotations.Form TimeEntryDTO timeEntryDTO) {
+        Either<FormFieldWithErrors, TimeEntry> validTimeEntryOrError = validation.validate(timeEntryDTO);
+
+        return validTimeEntryOrError.fold(formErrors -> {
+            logger.warn("Unable to persist a TimeEntry. Reason : " + formErrors.getErrorMessage());
+            Object htmlContent = newTimeEntry.data("zeForm", new Form("/times/new", timeEntryDTO ,formErrors));
+            return Response.status(400, formErrors.getErrorMessage()).entity(htmlContent).build();
+        }, newTimeEntry -> {
+            timeEntryService.persist(newTimeEntry);
+            return Response.seeOther(URI.create("/times")).build();
+        });
+
+    }
+```
+
+See also https://github.com/nicmarti/quarkus-timekeeper-demo
+
+
+
