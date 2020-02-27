@@ -1,11 +1,5 @@
 package org.lunatech.formidable;
 
-import io.quarkus.qute.RawString;
-import io.quarkus.qute.TemplateExtension;
-
-import java.util.stream.Collectors;
-
-import static io.quarkus.qute.TemplateExtension.ANY;
 
 /**
  * This is a simple DTO to store why the form was not validated.
@@ -19,7 +13,6 @@ import static io.quarkus.qute.TemplateExtension.ANY;
  *
  * @author Nicolas Martignole
  */
-@TemplateExtension
 public class Form {
     private String actionURI;
     private FormFieldWithErrors formFieldWithErrors;
@@ -43,47 +36,25 @@ public class Form {
         this(actionURI, null, null);
     }
 
-
-    public String getActionURI() {
+    // Please keep those methods as protected.
+    // We don't want those methods as part of the Qute ValueResolver that might be generated
+    // if our user import this Form as part of there Qute template
+    protected String getActionURI() {
         return actionURI;
     }
 
-    /**
-     * I had to write this because we cannot test if the formErrors instance is defined or not in Qute.
-     * <p>
-     * I tried this :
-     * <p>
-     * #{if formErrors}
-     * <div class="alert alert-danger">
-     * formErrors.reason
-     * </div>
-     * {/if}
-     *
-     * <p>
-     * But it will print "NOT_FOUND" in the HTML page
-     * <p>
-     * I also tried to use the elvis operator. But the div with alert would be print (and I don't want to)
-     * <div class="alert alert-danger">
-     * #{formErrors.reason ?: ''}
-     * </div>
-     *
-     * @return a Quarkus RawString
-     */
-    public io.quarkus.qute.RawString getRenderIfErrors() {
-        if (formFieldWithErrors != null && formFieldWithErrors.hasErrors()) {
-            String listOfErrors = formFieldWithErrors.getErrors().stream().map(error -> "field: " + error.getFieldName() + " error: " + error.getMessage() + "<br>").collect(Collectors.joining());
-            String r = "<div class=\"alert alert-danger\">" + listOfErrors + "</div>";
-            return new RawString(r);
-        } else {
-            return new RawString("");
-        }
+    // Please keep those methods as protected.
+    // We don't want those methods as part of the Qute ValueResolver that might be generated
+    // if our user import this Form as part of there Qute template
+    protected FormFieldWithErrors getFormFieldWithErrors() {
+        return formFieldWithErrors;
     }
 
-    public boolean hasErrors() {
-        if (formFieldWithErrors != null) {
-            return formFieldWithErrors.hasErrors();
-        }
-        return false;
+    // Please keep those methods as protected.
+    // We don't want those methods as part of the Qute ValueResolver that might be generated
+    // if our user import this Form as part of there Qute template
+    protected FieldMapper getFieldMapper() {
+        return fieldMapper;
     }
 
     @Override
@@ -96,25 +67,4 @@ public class Form {
                 '}';
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @TemplateExtension(matchName = ANY)
-    public static boolean fieldHasError(Form form, String fieldName) {
-        if (form.formFieldWithErrors != null) {
-            return form.formFieldWithErrors.getErrors().stream().anyMatch(e -> e.getFieldName().equals(fieldName));
-        } else {
-            return false;
-        }
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @TemplateExtension(matchName = ANY)
-    public static io.quarkus.qute.RawString fieldValue(Form form, String fieldName) {
-        if (form.fieldMapper != null) {
-            System.out.println("fieldMapper for fieldName " + fieldName);
-            return form.fieldMapper.getValue(fieldName).map(v -> new RawString(v)).orElse(new RawString(""));
-        } else {
-            System.out.println("err form.fieldMapper is null");
-            return new RawString("");
-        }
-    }
 }
