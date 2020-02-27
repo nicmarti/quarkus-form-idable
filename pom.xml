@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>fr.lunatech</groupId>
     <artifactId>form-idable</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Quarkus Form-idable</name>
@@ -37,7 +37,7 @@
         <connection>scm:git:git://github.com/nicmarti/quarkus-form-idable.git</connection>
         <developerConnection>scm:git:git@github.com:nicmarti/quarkus-form-idable.git</developerConnection>
         <url>https://github.com/nicmarti/quarkus-form-idable</url>
-        <tag>form-idable-1.0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
 
